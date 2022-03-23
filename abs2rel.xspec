@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description
+    xmlns:x="http://www.jenitennison.com/xslt/xspec"
+    xmlns:sg="http://www.sgmlguru.org/ns/functions"
+    stylesheet="file:/home/ari/Documents/projects/mystuff/abs2rel/">
+    
+    <x:scenario label="Given two paths, path 1 and path 2">
+        <x:call function="sg:abs2rel">
+            <x:param name="path1">/home/ari/root/one/test.xml</x:param>
+            <x:param name="path2">/home/ari/root/two/other.xml</x:param>
+        </x:call>
+        
+        <x:expect label="we should get path2 relative to path 1">../two/other.xml</x:expect>
+    </x:scenario>
+    
+</x:description>
