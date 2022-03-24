@@ -9,6 +9,8 @@
     
     <xsl:output method="xml" indent="yes"/>
     
+    <xsl:variable name="debug" select="false()" static="yes"/>
+    
     
     <xsl:template match="/">
         <xsl:apply-templates select="node()"/>
@@ -27,10 +29,6 @@
         <xsl:copy>
             <xsl:copy-of select="sg:abs2rel(path1,path2)"/>
         </xsl:copy>
-        
-        <alternative>
-            <xsl:copy-of select="sg:comp(path1,path2)"/>
-        </alternative>
     </xsl:template>
     
     
@@ -38,13 +36,16 @@
         <xsl:param name="path1"/>
         <xsl:param name="path2"/>
         
-        <xsl:variable name="local-path1" select="sg:unify($path1)"/>
-        <xsl:variable name="local-path2" select="sg:unify($path2)"/>
+        <xsl:variable
+            name="local-path1"
+            select="sg:unify($path1)"/>
+        <xsl:variable
+            name="local-path2"
+            select="sg:unify($path2)"/>
         
-        <xsl:message>
-            <xsl:value-of select="$local-path1"/>
-            ===
-            <xsl:value-of select="$local-path2"/>
+        <xsl:message expand-text="yes" use-when="$debug">
+            local-path1: {$local-path1}
+            local-path2: {$local-path2}
         </xsl:message>
         
         <xsl:variable
@@ -55,35 +56,60 @@
             select="tokenize($local-path2,'/')"/>
         
         <xsl:variable name="base">
+            <!-- Need raw base first, because paths may be different but have folders named the same -->
+            <xsl:variable name="raw">
+                <xsl:choose>
+                    <xsl:when
+                        test="substring($local-path1,1,1) = substring($local-path2,1,1)">
+                        <xsl:copy-of select="for-each-pair($p1,$p2,sg:comp#2)"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>oops</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            
+            <!-- Figure out actual base -->
             <xsl:choose>
-                <xsl:when
-                    test="substring($local-path1,1,1) = substring($local-path2,1,1)">
-                    <xsl:copy-of select="for-each-pair($p1,$p2,sg:comp#2)"/>
+                <xsl:when test="contains($raw,'###')">
+                    <xsl:value-of select="substring-before($raw,'###')"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:text>oops</xsl:text>
+                    <xsl:value-of select="$raw"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
         
-        <xsl:variable name="test">
+        <xsl:message expand-text="yes" use-when="$debug">
+            base: {$base}
+        </xsl:message>
+        
+        <!-- $local-path1 diff from $base -->
+        <xsl:variable name="diff-from-base">
             <xsl:value-of select="substring-after($local-path1,$base)"/>
         </xsl:variable>
         
+        <!-- How many parent traversals from $local-path1 to base? -->
         <xsl:variable name="dots" as="xs:integer">
-            <xsl:value-of select="count(tokenize($test,'/'))"/>
+            <xsl:value-of select="count(tokenize($diff-from-base,'/'))"/>
         </xsl:variable>
         
+        <!-- Output parent traversal from $local-path1 -->
         <xsl:for-each select="1 to ($dots - 1)">
             <xsl:text>../</xsl:text>
         </xsl:for-each>
         
-        <xsl:value-of select="substring-after($local-path2,$base)"/>
-        <xsl:value-of select="count(tokenize(substring-after($local-path2,$base),'/'))"/>
+        <!-- Produce relative path to $local-path2 OR
+             all of $local-path2, if the drive is different -->
+        <xsl:value-of
+            select="if ($base='oops') 
+                    then ($local-path2)
+                    else (substring-after($local-path2,$base))"/>
         
     </xsl:function>
     
     
+    <!-- Unify Windows/Unix path notations for comparison -->
     <xsl:function name="sg:unify">
         <xsl:param name="path" as="xs:string?"/>
         <xsl:variable name="local.string" select="translate($path,'\','/')"/>
@@ -96,23 +122,29 @@
     </xsl:function>
     
     
+    <!-- Compare path 1 and path 2 tokens -->
     <xsl:function name="sg:comp" as="node()*">
         <xsl:param name="s1"/>
         <xsl:param name="s2"/>
-        <xsl:variable name="local-s1" select="sg:unify($s1)"/>
-        <xsl:variable name="local-s2" select="sg:unify($s2)"/>
+        
+        <xsl:message expand-text="yes" use-when="$debug">
+            s1: {$s1}
+            s2: {$s2}
+        </xsl:message>
         
         <xsl:choose>
-            <xsl:when test="$local-s1='' and $local-s2=''">
+            <xsl:when test="$s1='' and $s2=''">
                 <xsl:value-of select="'/'"/>
             </xsl:when>
-            <xsl:when test="$local-s1 = $local-s2 and $local-s1!='' and $local-s2!=''">
-                <xsl:value-of select="'./' || tokenize($local-s1,'/')[last()]"/>
+            <xsl:when test="$s1 = $s2 and $s1!='' and $s2!=''">
+                <xsl:value-of select="$s1 || '/'"/>
             </xsl:when>
-            <xsl:when test="$local-s1 != $local-s2"/>
+            <!-- ONLY previous tokens may form the base path; ### indicates break -->
+            <xsl:when test="$s1 != $s2">
+                <xsl:value-of select="'###'"/>
+            </xsl:when>
+            <xsl:otherwise/>
         </xsl:choose>
-        
-        <!--<xsl:value-of select="if ($s1=$s2) then ('=') else ('+')"/>-->
     </xsl:function>
     
 </xsl:stylesheet>

@@ -3,32 +3,42 @@
     
     <pair>
         <path1>/home/ari/one/two/test.xml</path1>
-        <path2>/home/ari/three/four/target.xml</path2>
+        <path2>/home/ari/three/four/target-one.xml</path2>
     </pair>
     
     <pair>
         <path1>file:/home/ari/one/two/test.xml</path1>
-        <path2>file:/home/ari/three/four/target.xml</path2>
+        <path2>file:/home/ari/three/two/target-two.xml</path2>
+    </pair>
+    
+    <pair>
+        <path1>file:/home/ari/one/two/three/test.xml</path1>
+        <path2>file:/home/ari/three/two/three/target-twoandhalf.xml</path2>
     </pair>
     
     <pair>
         <path1>file:/home/ari/one/two/test.xml</path1>
-        <path2>file:/home/ari/three/four/five/six/target.xml</path2>
+        <path2>file:/home/ari/three/four/five/six/target-three.xml</path2>
     </pair>
     
     <pair>
         <path1>c:\Users\ari\one\two\test.xml</path1>
-        <path2>c:\Users\ari\three\four\target.xml</path2>
+        <path2>c:\Users\ari\three\four\target-four.xml</path2>
     </pair>
     
     <pair>
         <path1>c:\Users\ari\one\two\test.xml</path1>
-        <path2>d:\Projects\ari\target.xml</path2>
+        <path2>d:\Projects\ari\target-five.xml</path2>
     </pair>
     
     <pair>
         <path1>/home/ari/test.xml</path1>
-        <path2>/home/ari/one/two/three/four/target.xml</path2>
+        <path2>/home/ari/one/two/three/four/target-six.xml</path2>
+    </pair>
+    
+    <pair>
+        <path1>/home/ari/test.xml</path1>
+        <path2>/home/ari/target-seven.xml</path2>
     </pair>
     
     <pair>
