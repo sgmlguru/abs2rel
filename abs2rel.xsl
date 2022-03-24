@@ -101,10 +101,14 @@
         
         <!-- Produce relative path to $local-path2 OR
              all of $local-path2, if the drive is different -->
-        <xsl:value-of
-            select="if ($base='oops') 
-                    then ($local-path2)
-                    else (substring-after($local-path2,$base))"/>
+        <xsl:variable name="output">
+            <xsl:value-of
+                select="if ($base='oops') 
+                then ($local-path2)
+                else (substring-after($local-path2,$base))"/>
+        </xsl:variable>
+        
+        <xsl:value-of select="string-join($output)"/>
         
     </xsl:function>
     
