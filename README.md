@@ -5,7 +5,7 @@ This contains code for converting absolute paths to relative ditto. The intended
 Usage:
 
 ```XML
-sg:abs2rel(path1,path2)
+sg:abs2rel($path1,$path2)
 ```
 
 The function handles both Windows and Unix paths.
