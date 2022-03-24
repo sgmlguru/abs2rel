@@ -7,30 +7,7 @@
     exclude-result-prefixes="xs math sg"
     version="3.0">
     
-    <xsl:output method="xml" indent="yes"/>
-    
     <xsl:variable name="debug" select="false()" static="yes"/>
-    
-    
-    <xsl:template match="/">
-        <xsl:apply-templates select="node()"/>
-    </xsl:template>
-    
-    
-    <xsl:template match="node()">
-        <xsl:copy>
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
-    </xsl:template>
-    
-    
-    <xsl:template match="pair">
-        <xsl:copy>
-            <xsl:copy-of select="sg:abs2rel(path1,path2)"/>
-        </xsl:copy>
-    </xsl:template>
-    
     
     <xsl:function name="sg:abs2rel">
         <xsl:param name="path1"/>
